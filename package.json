@@ -2,7 +2,22 @@
   "name": "be-open-and-shut",
   "version": "0.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "be-open-and-shut.js",
+  "module": "be-open-and-shut.js",
+  "keywords": [
+    "web components",
+    "web component",
+    "custom elements",
+    "custom element"
+  ],
+  "exports": {
+    ".": "./be-open-and-shut.js",
+    "./be-open-and-shut.js": "./be-open-and-shut.js"
+  },
+  "files": [
+    "*.*"
+  ],
+  "types": "./types.d.ts",
   "scripts": {
     "serve": "node node_modules/may-it-serve/serve.js",
     "test": "playwright test",
@@ -14,7 +29,8 @@
   },
   "devDependencies": {
     "@playwright/test": "1.25.1",
-    "may-it-serve": "0.0.2"  
+    "may-it-serve": "0.0.2",
+    "@skypack/package-check": "0.2.2"
   },
   "repository": {
     "type": "git",
