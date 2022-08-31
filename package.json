@@ -4,7 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "serve": "node node_modules/may-it-serve/serve.js",
+    "test": "playwright test",
+    "package-check": "package-check"
+  },
+  "dependencies": {
+    "be-decorated": "0.0.147",
+    "be-hive": "0.0.57"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.25.1",
+    "may-it-serve": "0.0.2"  
   },
   "repository": {
     "type": "git",
