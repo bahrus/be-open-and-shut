@@ -1,32 +1,38 @@
 import {MinimalProxy} from 'be-decorated/types';
 
-export interface BeOpenAndShutEndUserProps {
-    set: string,
-    onClosest: string,
-    toVal: any,
-    when: string,
-    is: string,
-    outsideClosest: string,
-    onEventType: string
+export interface EndUserProps {
+    set?: string,
+    onClosest?: string,
+    toVal?: any,
+    when?: string,
+    is?: string,
+    outsideClosest?: string,
+    onEventType?: string
 }
 
-export interface BeOpenAndShutVirtualProps extends BeOpenAndShutEndUserProps, MinimalProxy{
+export interface VirtualProps extends EndUserProps, MinimalProxy{
     valsDoNotMatch: boolean;
     valsMatch: boolean;
     propChangeCnt: number;
     closestRef: WeakRef<Element> | undefined;
 }
 
-export interface BeSidelinedProps extends BeOpenAndShutVirtualProps{
-    proxy: Element & BeOpenAndShutVirtualProps
+export type Proxy = Element & VirtualProps;
+
+export interface ProxyProps extends VirtualProps{
+    proxy: Proxy;
 }
 
-export interface BeOpenAndShutActions{
-    subscribeToProp(self: this): Promise<void>;
-    compareVals(self: this): void;
-    addOutsideListener(self: this): void;
-    removeOutsideListener(self: this): void;
-    addLocalListener(self: this): void;
-    finale(proxy: Element & BeOpenAndShutVirtualProps, target:Element): Promise<void>; 
+export type PP = ProxyProps;
+
+
+
+export interface Actions{
+    subscribeToProp(pp: PP): Promise<void>;
+    compareVals(pp: PP): void;
+    addOutsideListener(pp: PP): void;
+    removeOutsideListener(pp: PP): void;
+    addLocalListener(pp: PP): void;
+    finale(proxy: Proxy, target:Element): Promise<void>; 
 }
 
