@@ -24,11 +24,11 @@
     "package-check": "package-check"
   },
   "dependencies": {
-    "be-decorated": "0.0.153",
-    "be-hive": "0.0.63"
+    "be-decorated": "0.0.161",
+    "be-hive": "0.0.66"
   },
   "devDependencies": {
-    "@playwright/test": "1.25.1",
+    "@playwright/test": "1.25.2",
     "may-it-serve": "0.0.2",
     "@skypack/package-check": "0.2.2"
   },

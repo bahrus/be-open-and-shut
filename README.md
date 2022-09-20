@@ -55,3 +55,27 @@ which is short-hand for:
 </side-nav>
 ```
 
+## Viewing Locally
+
+1.  Install git.
+2.  Fork/clone this repo.
+3.  Install node.
+4.  Open command window to folder where you cloned this repo.
+5.  > npm install
+6.  > npm run serve
+7.  Open http://localhost:3030/demo/dev in a modern browser.
+
+## Importing in ES Modules:
+
+```JavaScript
+import 'be-open-and-shut/be-open-and-shut.js';
+
+
+## Using from CDN:
+
+```html
+<script type=module crossorigin=anonymous>
+    import 'https://esm.run/be-open-and-shut';
+</script>
+```
+
