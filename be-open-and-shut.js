@@ -1,7 +1,7 @@
-import { define } from 'be-decorated/be-decorated.js';
+import { define } from 'be-decorated/DE.js';
 import { register } from 'be-hive/register.js';
 export class BeOpenAndShut extends EventTarget {
-    closestRef;
+    //closestRef: WeakRef<Element> | undefined;
     async subscribeToProp({ self, set, onClosest, proxy }) {
         const target = self.closest(onClosest);
         if (target === null)
@@ -27,7 +27,7 @@ export class BeOpenAndShut extends EventTarget {
         };
     }
     #outsideAbortController;
-    addOutsideListener({ when, is, set, toVal, outsideClosest, self }) {
+    addOutsideListener({ when, is, set, toVal, outsideClosest, self, proxy }) {
         const target = globalThis[when];
         if (this.#outsideAbortController !== undefined) {
             this.#outsideAbortController.abort();
@@ -37,9 +37,9 @@ export class BeOpenAndShut extends EventTarget {
             const outside = self.closest(outsideClosest);
             if (outside?.contains(e.target))
                 return;
-            if (this.closestRef === undefined)
+            if (proxy.closestRef === undefined)
                 return;
-            const ref = this.closestRef.deref();
+            const ref = proxy.closestRef.deref();
             if (ref === undefined)
                 return;
             ref[set] = toVal;

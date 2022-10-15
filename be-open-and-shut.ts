@@ -1,9 +1,9 @@
-import {define, BeDecoratedProps, BeDecoratedCore} from 'be-decorated/be-decorated.js';
+import {define, BeDecoratedProps} from 'be-decorated/DE.js';
 import {register} from 'be-hive/register.js';
 import {Actions, PP, Proxy, VirtualProps} from './types';
 
 export class BeOpenAndShut extends EventTarget implements Actions{
-    closestRef: WeakRef<Element> | undefined;
+    //closestRef: WeakRef<Element> | undefined;
     async subscribeToProp({self, set, onClosest, proxy}: PP): Promise<void> {
         const target = self.closest(onClosest!);
         if(target === null) throw `${onClosest} 404`;
@@ -29,7 +29,7 @@ export class BeOpenAndShut extends EventTarget implements Actions{
     }
 
     #outsideAbortController: AbortController | undefined;
-    addOutsideListener({when, is, set, toVal, outsideClosest, self}: PP): void {
+    addOutsideListener({when, is, set, toVal, outsideClosest, self, proxy}: PP): void {
         const target = (<any>globalThis)[when!] as EventTarget;
         if(this.#outsideAbortController !== undefined){
             this.#outsideAbortController.abort();
@@ -40,8 +40,8 @@ export class BeOpenAndShut extends EventTarget implements Actions{
             
             const outside = self!.closest(outsideClosest!);
             if(outside?.contains(e.target as Element)) return;
-            if(this.closestRef === undefined) return;
-            const ref = this.closestRef.deref();
+            if(proxy.closestRef === undefined) return;
+            const ref = proxy.closestRef.deref();
             if(ref === undefined) return;
             (<any>ref)[set!] = toVal;
         }, {
