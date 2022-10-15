@@ -31,7 +31,7 @@ We are assuming the property "open" has a standard setter which can be subscribe
 
 Some components, like the native details element, don't consistently call the "open" property setter when the value of open changes.
 
-To accommodate such components, add an additional event listener on the adorned element to monitor for:
+To accommodate such components, add an alternative event listener on the adorned element to monitor for:
 
 ```html
 <details be-open-and-shut=toggle>

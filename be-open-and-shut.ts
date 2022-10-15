@@ -4,7 +4,6 @@ import {Actions, PP, Proxy} from './types';
 
 export class BeOpenAndShut extends EventTarget implements Actions{
     async subscribeToProp({self, set, closestRef, proxy}: PP): Promise<void> {
-        console.log('subscribe');
         const ref = closestRef!.deref();
         if(ref === undefined) return;
         const {subscribe} = await import('trans-render/lib/subscribe.js');
@@ -24,13 +23,11 @@ export class BeOpenAndShut extends EventTarget implements Actions{
     }
 
     compareVals({closestRef, set, toVal}: PP){
-        console.log('compareVals');
         const ref = closestRef!.deref();
         if(ref === undefined) return;
         const actualVal = (<any>ref)[set!];
         const valsDoNotMatch = actualVal !== toVal;
         const valsMatch = !valsDoNotMatch;
-        console.log({valsDoNotMatch, valsMatch});
         return {
             valsMatch,
             valsDoNotMatch,
@@ -39,7 +36,6 @@ export class BeOpenAndShut extends EventTarget implements Actions{
 
     #outsideAbortController: AbortController | undefined;
     addOutsideListener({when, is, set, toVal, outsideClosest, self, proxy}: PP): void {
-        console.log('addOutsideListener');
         const target = (<any>globalThis)[when!] as EventTarget;
         if(this.#outsideAbortController !== undefined){
             this.#outsideAbortController.abort();
@@ -60,7 +56,6 @@ export class BeOpenAndShut extends EventTarget implements Actions{
     }
 
     removeOutsideListener({}: PP){
-        console.log('removeOutsideListener');
         if(this.#outsideAbortController !== undefined){
             this.#outsideAbortController.abort();
             this.#outsideAbortController = undefined;
@@ -120,7 +115,7 @@ define<Proxy & BeDecoratedProps<Proxy, Actions>, Actions>({
                 valsDoNotMatch: false,
                 valsMatch: true,
                 onEventType: '',
-                propChangeCnt: 1,
+                propChangeCnt: 0,
             },
             primaryProp: 'onEventType'
         },
@@ -134,7 +129,7 @@ define<Proxy & BeDecoratedProps<Proxy, Actions>, Actions>({
                 ifAllOf: ['propChangeCnt', 'closestRef', 'set']
             },
             addOutsideListener: {
-                ifAllOf: ['closestRef', 'set', 'when', 'valsDoNotMatch', 'outsideClosest', 'propChangeCnt']
+                ifAllOf: ['closestRef', 'set', 'when', 'valsDoNotMatch', 'outsideClosest']
             },
             removeOutsideListener: {
                 ifAllOf: ['valsMatch'],

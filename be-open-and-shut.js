@@ -2,7 +2,6 @@ import { define } from 'be-decorated/DE.js';
 import { register } from 'be-hive/register.js';
 export class BeOpenAndShut extends EventTarget {
     async subscribeToProp({ self, set, closestRef, proxy }) {
-        console.log('subscribe');
         const ref = closestRef.deref();
         if (ref === undefined)
             return;
@@ -22,14 +21,12 @@ export class BeOpenAndShut extends EventTarget {
         };
     }
     compareVals({ closestRef, set, toVal }) {
-        console.log('compareVals');
         const ref = closestRef.deref();
         if (ref === undefined)
             return;
         const actualVal = ref[set];
         const valsDoNotMatch = actualVal !== toVal;
         const valsMatch = !valsDoNotMatch;
-        console.log({ valsDoNotMatch, valsMatch });
         return {
             valsMatch,
             valsDoNotMatch,
@@ -37,7 +34,6 @@ export class BeOpenAndShut extends EventTarget {
     }
     #outsideAbortController;
     addOutsideListener({ when, is, set, toVal, outsideClosest, self, proxy }) {
-        console.log('addOutsideListener');
         const target = globalThis[when];
         if (this.#outsideAbortController !== undefined) {
             this.#outsideAbortController.abort();
@@ -58,7 +54,6 @@ export class BeOpenAndShut extends EventTarget {
         });
     }
     removeOutsideListener({}) {
-        console.log('removeOutsideListener');
         if (this.#outsideAbortController !== undefined) {
             this.#outsideAbortController.abort();
             this.#outsideAbortController = undefined;
@@ -110,7 +105,7 @@ define({
                 valsDoNotMatch: false,
                 valsMatch: true,
                 onEventType: '',
-                propChangeCnt: 1,
+                propChangeCnt: 0,
             },
             primaryProp: 'onEventType'
         },
@@ -124,7 +119,7 @@ define({
                 ifAllOf: ['propChangeCnt', 'closestRef', 'set']
             },
             addOutsideListener: {
-                ifAllOf: ['closestRef', 'set', 'when', 'valsDoNotMatch', 'outsideClosest', 'propChangeCnt']
+                ifAllOf: ['closestRef', 'set', 'when', 'valsDoNotMatch', 'outsideClosest']
             },
             removeOutsideListener: {
                 ifAllOf: ['valsMatch'],
