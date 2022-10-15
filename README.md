@@ -1,5 +1,20 @@
 # be-open-and-shut
 
+Automatically close an element that has an "pen" state, after clicking away from the element.
+
+[![Playwright Tests](https://github.com/bahrus/be-open-and-shut/actions/workflows/CI.yml/badge.svg?branch=baseline)](https://github.com/bahrus/be-open-and-shut/actions/workflows/CI.yml)
+
+<a href="https://nodei.co/npm/be-open-and-shut/"><img src="https://nodei.co/npm/be-open-and-shut.png"></a>
+
+Size of package, including custom element behavior framework (be-decorated):
+
+[![How big is this package in your project?](https://img.shields.io/bundlephobia/minzip/be-open-and-shut?style=for-the-badge)](https://bundlephobia.com/result?p=be-open-and-shut)
+
+Size of new code in this package:
+
+<img src="http://img.badgesize.io/https://cdn.jsdelivr.net/npm/be-open-and-shut?compression=gzip">
+
+
 ```html
 <side-nav be-open-and-shut>
     <menu >
