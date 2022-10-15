@@ -1,33 +1,43 @@
 import { define } from 'be-decorated/DE.js';
 import { register } from 'be-hive/register.js';
 export class BeOpenAndShut extends EventTarget {
-    //closestRef: WeakRef<Element> | undefined;
-    async subscribeToProp({ self, set, onClosest, proxy }) {
-        const target = self.closest(onClosest);
-        if (target === null)
-            throw `${onClosest} 404`;
-        proxy.closestRef = new WeakRef(target);
+    async subscribeToProp({ self, set, closestRef, proxy }) {
+        console.log('subscribe');
+        const ref = closestRef.deref();
+        if (ref === undefined)
+            return;
         const { subscribe } = await import('trans-render/lib/subscribe.js');
-        await subscribe(target, set, () => {
+        await subscribe(ref, set, () => {
             proxy.propChangeCnt++;
         });
         proxy.propChangeCnt++;
         proxy.resolved = true;
     }
+    findContainer({ onClosest, self }) {
+        const target = self.closest(onClosest);
+        if (target === null)
+            throw `${onClosest} 404`;
+        return {
+            closestRef: new WeakRef(target)
+        };
+    }
     compareVals({ closestRef, set, toVal }) {
+        console.log('compareVals');
         const ref = closestRef.deref();
         if (ref === undefined)
             return;
         const actualVal = ref[set];
         const valsDoNotMatch = actualVal !== toVal;
         const valsMatch = !valsDoNotMatch;
+        console.log({ valsDoNotMatch, valsMatch });
         return {
-            valsDoNotMatch,
             valsMatch,
+            valsDoNotMatch,
         };
     }
     #outsideAbortController;
     addOutsideListener({ when, is, set, toVal, outsideClosest, self, proxy }) {
+        console.log('addOutsideListener');
         const target = globalThis[when];
         if (this.#outsideAbortController !== undefined) {
             this.#outsideAbortController.abort();
@@ -48,6 +58,7 @@ export class BeOpenAndShut extends EventTarget {
         });
     }
     removeOutsideListener({}) {
+        console.log('removeOutsideListener');
         if (this.#outsideAbortController !== undefined) {
             this.#outsideAbortController.abort();
             this.#outsideAbortController = undefined;
@@ -87,8 +98,7 @@ define({
             ifWantsToBe,
             virtualProps: [
                 'set', 'onClosest', 'toVal', 'when', 'is',
-                'outsideClosest', 'valsDoNotMatch', 'valsMatch',
-                'propChangeCnt', 'closestRef', 'onEventType',
+                'outsideClosest', 'valsDoNotMatch', 'valsMatch', 'propChangeCnt', 'closestRef'
             ],
             proxyPropDefaults: {
                 set: 'open',
@@ -97,22 +107,24 @@ define({
                 when: 'document',
                 is: 'click',
                 outsideClosest: '*',
-                valsDoNotMatch: true,
-                valsMatch: false,
-                propChangeCnt: 0,
-                onEventType: ''
+                valsDoNotMatch: false,
+                valsMatch: true,
+                onEventType: '',
+                propChangeCnt: 1,
             },
             primaryProp: 'onEventType'
         },
         actions: {
+            findContainer: 'onClosest',
             subscribeToProp: {
-                ifAllOf: ['set', 'onClosest']
+                ifAllOf: ['set', 'closestRef', 'propChangeCnt'],
+                ifNoneOf: ['onEventType']
             },
             compareVals: {
                 ifAllOf: ['propChangeCnt', 'closestRef', 'set']
             },
             addOutsideListener: {
-                ifAllOf: ['closestRef', 'set', 'when', 'valsDoNotMatch', 'outsideClosest']
+                ifAllOf: ['closestRef', 'set', 'when', 'valsDoNotMatch', 'outsideClosest', 'propChangeCnt']
             },
             removeOutsideListener: {
                 ifAllOf: ['valsMatch'],

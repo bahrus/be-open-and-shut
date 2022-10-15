@@ -7,7 +7,7 @@ export interface EndUserProps {
     when?: string,
     is?: string,
     outsideClosest?: string,
-    onEventType?: string
+    onEventType?: string,
 }
 
 export interface VirtualProps extends EndUserProps, MinimalProxy{
@@ -29,6 +29,7 @@ export type PP = ProxyProps;
 
 export interface Actions{
     subscribeToProp(pp: PP): Promise<void>;
+    findContainer(pp: PP): Partial<PP>;
     compareVals(pp: PP): void;
     addOutsideListener(pp: PP): void;
     removeOutsideListener(pp: PP): void;
