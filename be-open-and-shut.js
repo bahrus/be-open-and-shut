@@ -1,16 +1,16 @@
 import { define } from 'be-decorated/DE.js';
 import { register } from 'be-hive/register.js';
 export class BeOpenAndShut extends EventTarget {
+    #propChangeEventTarget;
     async subscribeToProp({ self, set, closestRef, proxy }) {
         const ref = closestRef.deref();
         if (ref === undefined)
-            return;
-        const { subscribe } = await import('trans-render/lib/subscribe.js');
-        await subscribe(ref, set, () => {
-            proxy.propChangeCnt++;
-        });
-        proxy.propChangeCnt++;
-        proxy.resolved = true;
+            return; //TODO:  reinitiate find of container
+        this.#propChangeEventTarget = new EventTarget();
+        const { subscribe } = await import('trans-render/lib/subscribe2.js');
+        // 
+        subscribe(ref, set, this.#propChangeEventTarget);
+        return [{ resolved: true }, { compareVals: { on: set, of: this.#propChangeEventTarget } }];
     }
     findContainer({ onClosest, self }) {
         const target = self.closest(onClosest);

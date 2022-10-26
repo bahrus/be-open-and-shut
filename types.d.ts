@@ -1,4 +1,4 @@
-import {MinimalProxy} from 'be-decorated/types';
+import {MinimalProxy, EventConfigs} from 'be-decorated/types';
 
 export interface EndUserProps {
     set?: string,
@@ -25,10 +25,12 @@ export interface ProxyProps extends VirtualProps{
 
 export type PP = ProxyProps;
 
+export type PPP = Partial<PP>;
 
+export type PPE = [PPP, EventConfigs<Proxy, Actions>];
 
 export interface Actions{
-    subscribeToProp(pp: PP): Promise<void>;
+    subscribeToProp(pp: PP): Promise<void | PPE>;
     findContainer(pp: PP): Partial<PP>;
     compareVals(pp: PP): void;
     addOutsideListener(pp: PP): void;

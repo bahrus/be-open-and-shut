@@ -40,7 +40,7 @@ is shorthand for
 </side-nav>
 ```
 
-Technically, this only adds the event handler to the global document object when the value of the property doesn't match the the value of "toVal", and the event handler is aborted when it matches.  This allows for a huge number of open-and-shut elements to be active without burdening the global document object with lots of click handlers (typically only one will be active at any one time).
+Technically, this only adds the event handler to the global document object when the value of the property doesn't match the value of "toVal", and the event handler is aborted when it matches.  This allows for a huge number of open-and-shut elements to be active without burdening the global document object with lots of click handlers (typically only one will be active at any one time).
 
 We are assuming the property "open" has a standard setter which can be subscribed to.
 

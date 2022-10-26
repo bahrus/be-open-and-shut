@@ -24,7 +24,7 @@
     "package-check": "package-check"
   },
   "dependencies": {
-    "be-decorated": "0.0.182",
+    "be-decorated": "0.0.188",
     "be-hive": "0.0.76"
   },
   "devDependencies": {

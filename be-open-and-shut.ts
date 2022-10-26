@@ -1,17 +1,18 @@
 import {define, BeDecoratedProps} from 'be-decorated/DE.js';
 import {register} from 'be-hive/register.js';
-import {Actions, PP, Proxy} from './types';
+import {Actions, PP, Proxy, PPE} from './types';
 
 export class BeOpenAndShut extends EventTarget implements Actions{
-    async subscribeToProp({self, set, closestRef, proxy}: PP): Promise<void> {
+
+    #propChangeEventTarget : EventTarget | undefined;
+    async subscribeToProp({self, set, closestRef, proxy}: PP) {
         const ref = closestRef!.deref();
-        if(ref === undefined) return;
-        const {subscribe} = await import('trans-render/lib/subscribe.js');
-        await subscribe(ref, set!, () => {
-            proxy.propChangeCnt++;
-        });
-        proxy.propChangeCnt++;
-        proxy.resolved = true;
+        if(ref === undefined) return; //TODO:  reinitiate find of container
+        this.#propChangeEventTarget = new EventTarget();
+        const {subscribe} = await import('trans-render/lib/subscribe2.js');
+        // 
+        subscribe(ref, set!, this.#propChangeEventTarget);
+        return [{resolved: true}, {compareVals: {on: set!, of: this.#propChangeEventTarget}}] as PPE;
     }
 
     findContainer({onClosest, self}: PP): Partial<PP> {
