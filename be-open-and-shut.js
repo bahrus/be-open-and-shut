@@ -62,24 +62,10 @@ export class BeOpenAndShut extends EventTarget {
             this.#outsideAbortController = undefined;
         }
     }
-    #localAbortController;
     addLocalListener({ onEventType, self, proxy }) {
-        if (this.#localAbortController !== undefined) {
-            this.#localAbortController.abort();
-        }
-        this.#localAbortController = new AbortController();
-        self.addEventListener(onEventType, e => {
-            proxy.propChangeCnt++;
-        }, {
-            signal: this.#localAbortController.signal,
-        });
+        return [{ resolved: true }, { compareVals: { on: onEventType, of: self } }];
     }
     async finale(proxy, target) {
-        const { unsubscribe } = await import('trans-render/lib/subscribe.js');
-        unsubscribe(target);
-        if (this.#localAbortController !== undefined) {
-            this.#localAbortController.abort();
-        }
         if (this.#outsideAbortController !== undefined) {
             this.#outsideAbortController.abort();
         }
@@ -96,7 +82,7 @@ define({
             ifWantsToBe,
             virtualProps: [
                 'set', 'onClosest', 'toVal', 'when', 'is',
-                'outsideClosest', 'valsDoNotMatch', 'valsMatch', 'propChangeCnt', 'closestRef'
+                'outsideClosest', 'valsDoNotMatch', 'valsMatch', 'closestRef'
             ],
             proxyPropDefaults: {
                 set: 'open',
@@ -108,7 +94,6 @@ define({
                 valsDoNotMatch: false,
                 valsMatch: true,
                 onEventType: '',
-                propChangeCnt: 0,
             },
             primaryProp: 'onEventType'
         },
@@ -118,11 +103,11 @@ define({
                 ifNoneOf: ['closestRef'],
             },
             subscribeToProp: {
-                ifAllOf: ['set', 'closestRef', 'propChangeCnt'],
+                ifAllOf: ['set', 'closestRef',],
                 ifNoneOf: ['onEventType']
             },
             compareVals: {
-                ifAllOf: ['propChangeCnt', 'closestRef', 'set']
+                ifAllOf: ['closestRef', 'set']
             },
             addOutsideListener: {
                 ifAllOf: ['closestRef', 'set', 'when', 'valsDoNotMatch', 'outsideClosest']

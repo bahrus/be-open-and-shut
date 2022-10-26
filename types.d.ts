@@ -13,7 +13,7 @@ export interface EndUserProps {
 export interface VirtualProps extends EndUserProps, MinimalProxy{
     valsDoNotMatch: boolean;
     valsMatch: boolean;
-    propChangeCnt: number;
+    //propChangeCnt: number;
     closestRef: WeakRef<Element> | undefined;
 }
 
@@ -35,7 +35,7 @@ export interface Actions{
     compareVals(pp: PP): PPP;
     addOutsideListener(pp: PP): void;
     removeOutsideListener(pp: PP): void;
-    addLocalListener(pp: PP): void;
+    addLocalListener(pp: PP): PPE;
     finale(proxy: Proxy, target:Element): Promise<void>; 
 }
 
