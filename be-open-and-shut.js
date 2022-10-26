@@ -1,18 +1,19 @@
 import { define } from 'be-decorated/DE.js';
 import { register } from 'be-hive/register.js';
 export class BeOpenAndShut extends EventTarget {
-    #propChangeEventTarget;
+    #propChangeCallback;
     async subscribeToProp({ self, set, closestRef, proxy }) {
         const ref = closestRef.deref();
         if (ref === undefined)
-            return; //TODO:  reinitiate find of container
-        this.#propChangeEventTarget = new EventTarget();
+            return {
+                closestRef: undefined,
+            };
+        this.#propChangeCallback = new EventTarget();
         const { subscribe } = await import('trans-render/lib/subscribe2.js');
-        // 
-        subscribe(ref, set, this.#propChangeEventTarget);
-        return [{ resolved: true }, { compareVals: { on: set, of: this.#propChangeEventTarget } }];
+        subscribe(ref, set, this.#propChangeCallback);
+        return [{ resolved: true }, { compareVals: { on: set, of: this.#propChangeCallback } }];
     }
-    findContainer({ onClosest, self }) {
+    findClosest({ onClosest, self }) {
         const target = self.closest(onClosest);
         if (target === null)
             throw `${onClosest} 404`;
@@ -23,7 +24,9 @@ export class BeOpenAndShut extends EventTarget {
     compareVals({ closestRef, set, toVal }) {
         const ref = closestRef.deref();
         if (ref === undefined)
-            return;
+            return {
+                closestRef: undefined,
+            };
         const actualVal = ref[set];
         const valsDoNotMatch = actualVal !== toVal;
         const valsMatch = !valsDoNotMatch;
@@ -110,7 +113,10 @@ define({
             primaryProp: 'onEventType'
         },
         actions: {
-            findContainer: 'onClosest',
+            findClosest: {
+                ifAllOf: ['onClosest'],
+                ifNoneOf: ['closestRef'],
+            },
             subscribeToProp: {
                 ifAllOf: ['set', 'closestRef', 'propChangeCnt'],
                 ifNoneOf: ['onEventType']

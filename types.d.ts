@@ -30,9 +30,9 @@ export type PPP = Partial<PP>;
 export type PPE = [PPP, EventConfigs<Proxy, Actions>];
 
 export interface Actions{
-    subscribeToProp(pp: PP): Promise<void | PPE>;
-    findContainer(pp: PP): Partial<PP>;
-    compareVals(pp: PP): void;
+    subscribeToProp(pp: PP): Promise<void | PPE | PPP>;
+    findClosest(pp: PP): Partial<PP>;
+    compareVals(pp: PP): PPP;
     addOutsideListener(pp: PP): void;
     removeOutsideListener(pp: PP): void;
     addLocalListener(pp: PP): void;

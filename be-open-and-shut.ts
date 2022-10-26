@@ -1,21 +1,22 @@
 import {define, BeDecoratedProps} from 'be-decorated/DE.js';
 import {register} from 'be-hive/register.js';
-import {Actions, PP, Proxy, PPE} from './types';
+import {Actions, PP, Proxy, PPE, PPP} from './types';
 
 export class BeOpenAndShut extends EventTarget implements Actions{
 
-    #propChangeEventTarget : EventTarget | undefined;
+    #propChangeCallback : EventTarget | undefined;
     async subscribeToProp({self, set, closestRef, proxy}: PP) {
         const ref = closestRef!.deref();
-        if(ref === undefined) return; //TODO:  reinitiate find of container
-        this.#propChangeEventTarget = new EventTarget();
-        const {subscribe} = await import('trans-render/lib/subscribe2.js');
-        // 
-        subscribe(ref, set!, this.#propChangeEventTarget);
-        return [{resolved: true}, {compareVals: {on: set!, of: this.#propChangeEventTarget}}] as PPE;
+        if(ref === undefined) return {
+            closestRef: undefined,
+        } as PPP;
+        this.#propChangeCallback = new EventTarget();
+        const {subscribe} = await import('trans-render/lib/subscribe2.js'); 
+        subscribe(ref, set!, this.#propChangeCallback);
+        return [{resolved: true}, {compareVals: {on: set!, of: this.#propChangeCallback}}] as PPE;
     }
 
-    findContainer({onClosest, self}: PP): Partial<PP> {
+    findClosest({onClosest, self}: PP): Partial<PP> {
         const target = self.closest(onClosest!);
         if(target === null) throw `${onClosest} 404`;
         return {
@@ -25,7 +26,9 @@ export class BeOpenAndShut extends EventTarget implements Actions{
 
     compareVals({closestRef, set, toVal}: PP){
         const ref = closestRef!.deref();
-        if(ref === undefined) return;
+        if(ref === undefined) return {
+            closestRef: undefined,
+        };
         const actualVal = (<any>ref)[set!];
         const valsDoNotMatch = actualVal !== toVal;
         const valsMatch = !valsDoNotMatch;
@@ -121,7 +124,10 @@ define<Proxy & BeDecoratedProps<Proxy, Actions>, Actions>({
             primaryProp: 'onEventType'
         },
         actions:{
-            findContainer: 'onClosest',
+            findClosest: {
+                ifAllOf: ['onClosest'],
+                ifNoneOf: ['closestRef'],
+            },
             subscribeToProp: {
                 ifAllOf: ['set', 'closestRef', 'propChangeCnt'],
                 ifNoneOf: ['onEventType']
