@@ -38,6 +38,8 @@ export class BeOpenAndShut extends EventTarget implements Actions{
         }
     }
 
+    //This seems to be too complicated to utilize the FROOP Orchestration / avoid side effects because:
+    //1.  We need to turn off the listener only under certain conditions, so can't use "once"
     #outsideAbortController: AbortController | undefined;
     addOutsideListener({when, is, set, toVal, outsideClosest, self, proxy}: PP): void {
         const target = (<any>globalThis)[when!] as EventTarget;
@@ -50,6 +52,7 @@ export class BeOpenAndShut extends EventTarget implements Actions{
             
             const outside = self!.closest(outsideClosest!);
             if(outside?.contains(e.target as Element)) return;
+            this.#outsideAbortController?.abort();
             if(proxy.closestRef === undefined) return;
             const ref = proxy.closestRef.deref();
             if(ref === undefined) return;
@@ -58,6 +61,7 @@ export class BeOpenAndShut extends EventTarget implements Actions{
             signal: this.#outsideAbortController.signal
         });
     }
+
 
     removeOutsideListener({}: PP){
         if(this.#outsideAbortController !== undefined){

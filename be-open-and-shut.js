@@ -35,6 +35,8 @@ export class BeOpenAndShut extends EventTarget {
             valsDoNotMatch,
         };
     }
+    //This seems to be too complicated to utilize the FROOP Orchestration / avoid side effects because:
+    //1.  We need to turn off the listener only under certain conditions, so can't use "once"
     #outsideAbortController;
     addOutsideListener({ when, is, set, toVal, outsideClosest, self, proxy }) {
         const target = globalThis[when];
@@ -46,6 +48,7 @@ export class BeOpenAndShut extends EventTarget {
             const outside = self.closest(outsideClosest);
             if (outside?.contains(e.target))
                 return;
+            this.#outsideAbortController?.abort();
             if (proxy.closestRef === undefined)
                 return;
             const ref = proxy.closestRef.deref();
