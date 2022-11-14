@@ -6,7 +6,6 @@ export class BeOpenAndShut extends EventTarget {
         if (self instanceof HTMLDialogElement) {
             this.#manageDialog(self);
             return [{ resolved: true }, { 'closeDialogIf': { on: 'click', of: self } }];
-            ;
         }
         const ref = closestRef.deref();
         if (ref === undefined)

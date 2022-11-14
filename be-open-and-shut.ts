@@ -8,7 +8,7 @@ export class BeOpenAndShut extends EventTarget implements Actions{
     async subscribeToProp({self, set, closestRef, proxy}: PP) {
         if(self instanceof HTMLDialogElement){
             this.#manageDialog(self);
-            return [{resolved: true}, {'closeDialogIf': {on: 'click', of: self}}] as PPE;;
+            return [{resolved: true}, {'closeDialogIf': {on: 'click', of: self}}] as PPE;
         }
         const ref = closestRef!.deref();
         if(ref === undefined) return {
