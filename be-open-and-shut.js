@@ -5,7 +5,8 @@ export class BeOpenAndShut extends EventTarget {
     async subscribeToProp({ self, set, closestRef, proxy }) {
         if (self instanceof HTMLDialogElement) {
             this.#manageDialog(self);
-            return;
+            return [{ resolved: true }, { 'closeDialogIf': { on: 'click', of: self } }];
+            ;
         }
         const ref = closestRef.deref();
         if (ref === undefined)
@@ -17,19 +18,21 @@ export class BeOpenAndShut extends EventTarget {
         subscribe(ref, set, this.#propChangeCallback);
         return [{ resolved: true }, { compareVals: { on: set, of: this.#propChangeCallback } }];
     }
+    closeDialogIf({ self }, e) {
+        const rect = self.getBoundingClientRect();
+        const clickedInDialog = (rect.top <= e.clientY &&
+            e.clientY <= rect.top + rect.height &&
+            rect.left <= e.clientX &&
+            e.clientX <= rect.left + rect.width);
+        if (!clickedInDialog) {
+            self.close();
+        }
+    }
     #manageDialog(self) {
         self.addEventListener('click', e => {
             // if(e.currentTarget === e.target){
             //     self.close();
             // }
-            const rect = self.getBoundingClientRect();
-            const clickedInDialog = (rect.top <= e.clientY &&
-                e.clientY <= rect.top + rect.height &&
-                rect.left <= e.clientX &&
-                e.clientX <= rect.left + rect.width);
-            if (!clickedInDialog) {
-                self.close();
-            }
         });
     }
     findClosest({ onClosest, self }) {

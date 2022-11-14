@@ -31,6 +31,7 @@ export type PPE = [PPP, EventConfigs<Proxy, Actions>];
 
 export interface Actions{
     subscribeToProp(pp: PP): Promise<void | PPE | PPP>;
+    closeDialogIf(pp: PP, e: Event): void;
     findClosest(pp: PP): Partial<PP>;
     compareVals(pp: PP): PPP;
     addOutsideListener(pp: PP): void;

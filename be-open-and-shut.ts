@@ -8,7 +8,7 @@ export class BeOpenAndShut extends EventTarget implements Actions{
     async subscribeToProp({self, set, closestRef, proxy}: PP) {
         if(self instanceof HTMLDialogElement){
             this.#manageDialog(self);
-            return;
+            return [{resolved: true}, {'closeDialogIf': {on: 'click', of: self}}] as PPE;;
         }
         const ref = closestRef!.deref();
         if(ref === undefined) return {
@@ -20,23 +20,27 @@ export class BeOpenAndShut extends EventTarget implements Actions{
         return [{resolved: true}, {compareVals: {on: set!, of: this.#propChangeCallback}}] as PPE;
     }
 
+    closeDialogIf({self}: PP, e: MouseEvent){
+        const rect = self.getBoundingClientRect();
+
+        const clickedInDialog = (
+            rect.top <= e.clientY &&
+            e.clientY <= rect.top + rect.height &&
+            rect.left <= e.clientX &&
+            e.clientX <= rect.left + rect.width
+        );
+
+        if (!clickedInDialog ){
+            (self as HTMLDialogElement).close();
+        }
+    }
+
     #manageDialog(self: HTMLDialogElement){
         self.addEventListener('click', e => {
             // if(e.currentTarget === e.target){
             //     self.close();
             // }
-            const rect = self.getBoundingClientRect();
-
-            const clickedInDialog = (
-                rect.top <= e.clientY &&
-                e.clientY <= rect.top + rect.height &&
-                rect.left <= e.clientX &&
-                e.clientX <= rect.left + rect.width
-            );
-
-            if (!clickedInDialog ){
-                self.close();
-            }
+            
         });
     }
 
