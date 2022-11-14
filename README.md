@@ -70,6 +70,8 @@ which is short-hand for:
 </side-nav>
 ```
 
+There is special logic for the dialog element, which doesn't come close to following this pattern.  H/t on the [implementation](https://stackoverflow.com/questions/50037663/how-to-close-a-native-html-dialog-when-clicking-outside-with-javascript) and for [making me think about this scenario](https://twitter.com/diegohaz/status/1591951471691845632).
+
 ## Viewing Locally
 
 1.  Install git.
