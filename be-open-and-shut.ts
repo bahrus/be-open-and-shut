@@ -6,6 +6,10 @@ export class BeOpenAndShut extends EventTarget implements Actions{
 
     #propChangeCallback : EventTarget | undefined;
     async subscribeToProp({self, set, closestRef, proxy}: PP) {
+        if(self instanceof HTMLDialogElement){
+            this.#manageDialog(self);
+            return;
+        }
         const ref = closestRef!.deref();
         if(ref === undefined) return {
             closestRef: undefined,
@@ -14,6 +18,26 @@ export class BeOpenAndShut extends EventTarget implements Actions{
         const {subscribe} = await import('trans-render/lib/subscribe2.js'); 
         subscribe(ref, set!, this.#propChangeCallback);
         return [{resolved: true}, {compareVals: {on: set!, of: this.#propChangeCallback}}] as PPE;
+    }
+
+    #manageDialog(self: HTMLDialogElement){
+        self.addEventListener('click', e => {
+            // if(e.currentTarget === e.target){
+            //     self.close();
+            // }
+            const rect = self.getBoundingClientRect();
+
+            const clickedInDialog = (
+                rect.top <= e.clientY &&
+                e.clientY <= rect.top + rect.height &&
+                rect.left <= e.clientX &&
+                e.clientX <= rect.left + rect.width
+            );
+
+            if (!clickedInDialog ){
+                self.close();
+            }
+        });
     }
 
     findClosest({onClosest, self}: PP): Partial<PP> {
@@ -97,6 +121,7 @@ define<Proxy & BeDecoratedProps<Proxy, Actions>, Actions>({
                 'set', 'onClosest', 'toVal', 'when', 'is', 
                 'outsideClosest', 'valsDoNotMatch', 'valsMatch', 'closestRef'
             ],
+            forceVisible: ['dialog'],
             proxyPropDefaults: {
                 set: 'open',
                 onClosest: '*',

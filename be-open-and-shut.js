@@ -3,6 +3,10 @@ import { register } from 'be-hive/register.js';
 export class BeOpenAndShut extends EventTarget {
     #propChangeCallback;
     async subscribeToProp({ self, set, closestRef, proxy }) {
+        if (self instanceof HTMLDialogElement) {
+            this.#manageDialog(self);
+            return;
+        }
         const ref = closestRef.deref();
         if (ref === undefined)
             return {
@@ -12,6 +16,21 @@ export class BeOpenAndShut extends EventTarget {
         const { subscribe } = await import('trans-render/lib/subscribe2.js');
         subscribe(ref, set, this.#propChangeCallback);
         return [{ resolved: true }, { compareVals: { on: set, of: this.#propChangeCallback } }];
+    }
+    #manageDialog(self) {
+        self.addEventListener('click', e => {
+            // if(e.currentTarget === e.target){
+            //     self.close();
+            // }
+            const rect = self.getBoundingClientRect();
+            const clickedInDialog = (rect.top <= e.clientY &&
+                e.clientY <= rect.top + rect.height &&
+                rect.left <= e.clientX &&
+                e.clientX <= rect.left + rect.width);
+            if (!clickedInDialog) {
+                self.close();
+            }
+        });
     }
     findClosest({ onClosest, self }) {
         const target = self.closest(onClosest);
@@ -87,6 +106,7 @@ define({
                 'set', 'onClosest', 'toVal', 'when', 'is',
                 'outsideClosest', 'valsDoNotMatch', 'valsMatch', 'closestRef'
             ],
+            forceVisible: ['dialog'],
             proxyPropDefaults: {
                 set: 'open',
                 onClosest: '*',
