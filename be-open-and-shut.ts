@@ -14,9 +14,16 @@ export class BeOpenAndShut extends EventTarget implements Actions{
         if(ref === undefined) return {
             closestRef: undefined,
         } as PPP;
-        this.#propChangeCallback = new EventTarget();
-        const {subscribe} = await import('trans-render/lib/subscribe2.js'); 
-        subscribe(ref, set!, this.#propChangeCallback);
+        const {isDefined} = await import('trans-render/lib/isDefined.js');
+        await isDefined(ref);
+        const propagator = (ref.constructor as any).ceDef?.services?.propper?.stores?.get(ref);
+        if(propagator !== undefined){
+            this.#propChangeCallback = propagator as EventTarget;
+        }else{
+            this.#propChangeCallback = new EventTarget();
+            const {subscribe} = await import('trans-render/lib/subscribe2.js'); 
+            subscribe(ref, set!, this.#propChangeCallback);
+        }
         return [{resolved: true}, {compareVals: {on: set!, of: this.#propChangeCallback}}] as PPE;
     }
 
@@ -76,14 +83,17 @@ export class BeOpenAndShut extends EventTarget implements Actions{
         }
         this.#outsideAbortController = new AbortController();
         target.addEventListener(is!, (e) => {
-            
-            
             const outside = self!.closest(outsideClosest!);
-            if(outside?.contains(e.target as Element)) return;
+            const composedPath = e.composedPath();
+            for(const trigger of composedPath){
+                if(outside?.contains(trigger as Element)) return;
+            }
+            
             this.#outsideAbortController?.abort();
             if(proxy.closestRef === undefined) return;
             const ref = proxy.closestRef.deref();
             if(ref === undefined) return;
+            console.log({ref, set, toVal});
             (<any>ref)[set!] = toVal;
         }, {
             signal: this.#outsideAbortController.signal

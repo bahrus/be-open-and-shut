@@ -12,9 +12,17 @@ export class BeOpenAndShut extends EventTarget {
             return {
                 closestRef: undefined,
             };
-        this.#propChangeCallback = new EventTarget();
-        const { subscribe } = await import('trans-render/lib/subscribe2.js');
-        subscribe(ref, set, this.#propChangeCallback);
+        const { isDefined } = await import('trans-render/lib/isDefined.js');
+        await isDefined(ref);
+        const propagator = ref.constructor.ceDef?.services?.propper?.stores?.get(ref);
+        if (propagator !== undefined) {
+            this.#propChangeCallback = propagator;
+        }
+        else {
+            this.#propChangeCallback = new EventTarget();
+            const { subscribe } = await import('trans-render/lib/subscribe2.js');
+            subscribe(ref, set, this.#propChangeCallback);
+        }
         return [{ resolved: true }, { compareVals: { on: set, of: this.#propChangeCallback } }];
     }
     closeDialogIf({ self }, e) {
@@ -67,14 +75,18 @@ export class BeOpenAndShut extends EventTarget {
         this.#outsideAbortController = new AbortController();
         target.addEventListener(is, (e) => {
             const outside = self.closest(outsideClosest);
-            if (outside?.contains(e.target))
-                return;
+            const composedPath = e.composedPath();
+            for (const trigger of composedPath) {
+                if (outside?.contains(trigger))
+                    return;
+            }
             this.#outsideAbortController?.abort();
             if (proxy.closestRef === undefined)
                 return;
             const ref = proxy.closestRef.deref();
             if (ref === undefined)
                 return;
+            console.log({ ref, set, toVal });
             ref[set] = toVal;
         }, {
             signal: this.#outsideAbortController.signal
