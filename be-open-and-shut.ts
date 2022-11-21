@@ -86,7 +86,8 @@ export class BeOpenAndShut extends EventTarget implements Actions{
             const outside = self!.closest(outsideClosest!);
             const composedPath = e.composedPath();
             for(const trigger of composedPath){
-                if(outside?.contains(trigger as Element)) return;
+                if(!(trigger instanceof Element)) continue;
+                if(outside?.contains(trigger)) return;
             }
             
             this.#outsideAbortController?.abort();

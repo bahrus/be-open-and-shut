@@ -77,6 +77,8 @@ export class BeOpenAndShut extends EventTarget {
             const outside = self.closest(outsideClosest);
             const composedPath = e.composedPath();
             for (const trigger of composedPath) {
+                if (!(trigger instanceof Element))
+                    continue;
                 if (outside?.contains(trigger))
                     return;
             }

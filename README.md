@@ -3,8 +3,7 @@
 Automatically close an element that has an "pen" state, after clicking away from the element.
 
 [![Playwright Tests](https://github.com/bahrus/be-open-and-shut/actions/workflows/CI.yml/badge.svg?branch=baseline)](https://github.com/bahrus/be-open-and-shut/actions/workflows/CI.yml)
-
-<a href="https://nodei.co/npm/be-open-and-shut/"><img src="https://nodei.co/npm/be-open-and-shut.png"></a>
+[![NPM version](https://badge.fury.io/js/be-open-and-shut.png)](http://badge.fury.io/js/be-open-and-shut)
 
 Size of package, including custom element behavior framework (be-decorated):
 
