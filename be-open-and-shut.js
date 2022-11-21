@@ -88,7 +88,6 @@ export class BeOpenAndShut extends EventTarget {
             const ref = proxy.closestRef.deref();
             if (ref === undefined)
                 return;
-            console.log({ ref, set, toVal });
             ref[set] = toVal;
         }, {
             signal: this.#outsideAbortController.signal
