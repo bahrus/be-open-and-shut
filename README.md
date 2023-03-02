@@ -75,8 +75,8 @@ which is short-hand for:
 <details be-open-and-shut='
     On toggle event of adorned element spring to action.
     Said action attaches to document an event listener with event type click.
-    Said event listener does a check to see if event was triggered on an element outside closest ancestor.
-    If said check is satisfied set property open to false of closest ancestor of adorned element.
+    Said event listener does a check to see if event was triggered on an element outside closest *.
+    If said check is satisfied set property open to false of closest * of adorned element.
 '>
     <summary>test</summary>
 </side-nav>
