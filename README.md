@@ -69,6 +69,20 @@ which is short-hand for:
 </side-nav>
 ```
 
+## Hemingway notation [TODO]
+
+```html
+<details be-open-and-shut='
+    On toggle event of adorned element spring to action.
+    Said action attaches to document an event listener with event type click.
+    Said event listener does a check to see if event was triggered on an element outside closest ancestor.
+    If said check is satisfied set property open to false of closest ancestor of adorned element.
+'>
+    <summary>test</summary>
+</side-nav>
+```
+
+
 There is special logic for the dialog element, which doesn't come close to following this pattern.  H/t on the [implementation](https://stackoverflow.com/questions/50037663/how-to-close-a-native-html-dialog-when-clicking-outside-with-javascript) and for [making me think about this scenario](https://twitter.com/diegohaz/status/1591951471691845632).
 
 ```html
