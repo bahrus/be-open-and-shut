@@ -1,19 +1,29 @@
-import {define, BeDecoratedProps} from 'be-decorated/DE.js';
+import {BE, propDefaults, propInfo} from 'be-enhanced/BE.js';
+import {BEConfig} from 'be-enhanced/types';
+import {XE} from 'xtal-element/XE.js';
+import {Actions, AllProps, AP, PAP, ProPAP, POA} from './types';
 import {register} from 'be-hive/register.js';
-import {Actions, PP, Proxy, PPE, PPP, ProxyProps} from './types';
 
-export class BeOpenAndShut extends EventTarget implements Actions{
+export class BeOpenAndShut extends BE<AP, Actions> implements Actions{
+
+    static  override get beConfig(){
+        return {
+            parse: true,
+            primaryProp: 'onEventType'
+        } as BEConfig
+    }
 
     #propChangeCallback : EventTarget | undefined;
-    async subscribeToProp({self, set, closestRef, proxy}: PP) {
-        if(self instanceof HTMLDialogElement){
-            this.#manageDialog(self);
-            return [{resolved: true}, {'closeDialogIf': {on: 'click', of: self}}] as PPE;
+    async subscribeToProp(self: this): Promise<void | POA | PAP> {
+        const {enhancedElement, set, closestRef} = self;
+        if(enhancedElement instanceof HTMLDialogElement){
+            this.#manageDialog(enhancedElement);
+            return [{resolved: true}, {'closeDialogIf': {on: 'click', of: self}}] as POA;
         }
         const ref = closestRef!.deref();
         if(ref === undefined) return {
             closestRef: undefined,
-        } as PPP;
+        } as PAP;
         const {isDefined} = await import('trans-render/lib/isDefined.js');
         await isDefined(ref);
         const propagator = (ref.constructor as any).ceDef?.services?.propper?.stores?.get(ref);
@@ -27,21 +37,6 @@ export class BeOpenAndShut extends EventTarget implements Actions{
         return [{resolved: true}, {compareVals: {on: set!, of: this.#propChangeCallback}}] as PPE;
     }
 
-    closeDialogIf({self}: PP, e: MouseEvent){
-        const rect = self.getBoundingClientRect();
-
-        const clickedInDialog = (
-            rect.top <= e.clientY &&
-            e.clientY <= rect.top + rect.height &&
-            rect.left <= e.clientX &&
-            e.clientX <= rect.left + rect.width
-        );
-
-        if (!clickedInDialog ){
-            (self as HTMLDialogElement).close();
-        }
-    }
-
     #manageDialog(self: HTMLDialogElement){
         self.addEventListener('click', e => {
             // if(e.currentTarget === e.target){
@@ -51,15 +46,33 @@ export class BeOpenAndShut extends EventTarget implements Actions{
         });
     }
 
-    findClosest({onClosest, self}: PP): Partial<PP> {
-        const target = self.closest(onClosest!);
+    closeDialogIf(self: this, e: MouseEvent): void {
+        const {enhancedElement} = self;
+        const rect = enhancedElement.getBoundingClientRect();
+
+        const clickedInDialog = (
+            rect.top <= e.clientY &&
+            e.clientY <= rect.top + rect.height &&
+            rect.left <= e.clientX &&
+            e.clientX <= rect.left + rect.width
+        );
+
+        if (!clickedInDialog ){
+            (enhancedElement as HTMLDialogElement).close();
+        }
+    }
+
+    findClosest(self: this): Partial<AllProps> {
+        const {onClosest, enhancedElement} = self;
+        const target = enhancedElement.closest(onClosest!);
         if(target === null) throw `${onClosest} 404`;
         return {
             closestRef: new WeakRef(target)
         }
     }
 
-    compareVals({closestRef, set, toVal}: PP){
+    compareVals(self: this): Partial<AllProps> {
+        const {closestRef, set, toVal} = self;
         const ref = closestRef!.deref();
         if(ref === undefined) return {
             closestRef: undefined,
@@ -76,14 +89,15 @@ export class BeOpenAndShut extends EventTarget implements Actions{
     //This seems to be too complicated to utilize the FROOP Orchestration / avoid side effects because:
     //1.  We need to turn off the listener only under certain conditions, so can't use "once"
     #outsideAbortController: AbortController | undefined;
-    addOutsideListener({when, is, set, toVal, outsideClosest, self, proxy}: PP): void {
+    addOutsideListener(self: this): void {
+        const {when, is, set, toVal, outsideClosest, enhancedElement} = self;
         const target = (<any>globalThis)[when!] as EventTarget;
         if(this.#outsideAbortController !== undefined){
             this.#outsideAbortController.abort();
         }
         this.#outsideAbortController = new AbortController();
         target.addEventListener(is!, (e) => {
-            const outside = self!.closest(outsideClosest!);
+            const outside = enhancedElement!.closest(outsideClosest!);
             const composedPath = e.composedPath();
             for(const trigger of composedPath){
                 if(!(trigger instanceof Element)) continue;
@@ -91,8 +105,8 @@ export class BeOpenAndShut extends EventTarget implements Actions{
             }
             
             this.#outsideAbortController?.abort();
-            if(proxy.closestRef === undefined) return;
-            const ref = proxy.closestRef.deref();
+            if(self.closestRef === undefined) return;
+            const ref = self.closestRef.deref();
             if(ref === undefined) return;
             (<any>ref)[set!] = toVal;
         }, {
@@ -100,54 +114,48 @@ export class BeOpenAndShut extends EventTarget implements Actions{
         });
     }
 
-
-    removeOutsideListener({}: PP){
+    removeOutsideListener(self: this): void {
         if(this.#outsideAbortController !== undefined){
             this.#outsideAbortController.abort();
             this.#outsideAbortController = undefined;
         }
     }
 
-    addLocalListener({onEventType, self, proxy}: PP): PPE {
-        return [{resolved: true}, {compareVals: {on: onEventType, of: self}}] as PPE;
+    addLocalListener(self: this): POA {
+        const {onEventType, enhancedElement} = self;
+        return [{resolved: true}, {compareVals: {on: onEventType, of: enhancedElement}}] as POA;
     }
 
-    async finale(proxy: Proxy, target: Element) {
+    override detach(detachedElement: Element): void {
         if(this.#outsideAbortController !== undefined){
             this.#outsideAbortController.abort();
         }
     }
-
 }
 
+export interface BeOpenAndShut extends AllProps{}
 
 const tagName = 'be-open-and-shut';
 const ifWantsToBe = 'open-and-shut';
 const upgrade = '*';
 
-define<Proxy & BeDecoratedProps<Proxy, Actions>, Actions>({
-    config:{
+const xe = new XE<AP, Actions>({
+    config: {
         tagName,
-        propDefaults:{
-            upgrade,
-            ifWantsToBe,
-            virtualProps: [
-                'set', 'onClosest', 'toVal', 'when', 'is', 
-                'outsideClosest', 'valsDoNotMatch', 'valsMatch', 'closestRef'
-            ],
-            forceVisible: ['dialog'],
-            proxyPropDefaults: {
-                set: 'open',
-                onClosest: '*',
-                toVal: false,
-                when: 'document',
-                is: 'click',
-                outsideClosest: '*',
-                valsDoNotMatch: false,
-                valsMatch: true,
-                onEventType: '',
-            },
-            primaryProp: 'onEventType'
+        propDefaults: {
+            ...propDefaults,
+            set: 'open',
+            onClosest: '*',
+            toVal: false,
+            when: 'document',
+            is: 'click',
+            outsideClosest: '*',
+            valsDoNotMatch: false,
+            valsMatch: true,
+            onEventType: '',
+        },
+        propInfo:{
+            ...propInfo
         },
         actions:{
             findClosest: {
@@ -170,9 +178,7 @@ define<Proxy & BeDecoratedProps<Proxy, Actions>, Actions>({
             addLocalListener: 'onEventType'
         }
     },
-    complexPropDefaults:{
-        controller: BeOpenAndShut
-    }
+    superclass: BeOpenAndShut
 });
 
 register(ifWantsToBe, upgrade, tagName);
