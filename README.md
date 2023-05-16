@@ -5,7 +5,7 @@ Automatically close an element that has an "pen" state, after clicking away from
 [![Playwright Tests](https://github.com/bahrus/be-open-and-shut/actions/workflows/CI.yml/badge.svg?branch=baseline)](https://github.com/bahrus/be-open-and-shut/actions/workflows/CI.yml)
 [![NPM version](https://badge.fury.io/js/be-open-and-shut.png)](http://badge.fury.io/js/be-open-and-shut)
 
-Size of package, including custom element behavior framework (be-decorated):
+Size of package, including custom element behavior framework (be-enhanced):
 
 [![How big is this package in your project?](https://img.shields.io/bundlephobia/minzip/be-open-and-shut?style=for-the-badge)](https://bundlephobia.com/result?p=be-open-and-shut)
 
@@ -106,7 +106,7 @@ There is special logic for the dialog element, which doesn't come close to follo
 4.  Open command window to folder where you cloned this repo.
 5.  > npm install
 6.  > npm run serve
-7.  Open http://localhost:3030/demo/dev in a modern browser.
+7.  Open http://localhost:3030/demo in a modern browser.
 
 ## Importing in ES Modules:
 
