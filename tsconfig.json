@@ -9,7 +9,7 @@
 		"watch": true
 	},
 	"files": [
-		"be-open-and-shut.ts"
+		"be-open-and-shut2.ts"
 	],
 	"exclude":[
 		"build",

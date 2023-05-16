@@ -15,24 +15,24 @@
     "./be-open-and-shut.js": "./be-open-and-shut.js"
   },
   "files": [
-    "*.*"
+    "*.js",
+    "types.d.ts"
   ],
   "types": "./types.d.ts",
   "scripts": {
     "serve": "node node_modules/may-it-serve/serve.js",
     "test": "playwright test",
-    "package-check": "package-check"
+    "safari": "npx playwright wk http://localhost:3030"
   },
   "dependencies": {
-    "be-enhanced": "0.0.14",
-    "be-hive": "0.0.82",
-    "trans-render": "0.0.679",
-    "xtal-element": "0.0.559"
+    "be-enhanced": "0.0.17",
+    "be-hive": "0.0.92",
+    "trans-render": "0.0.680",
+    "xtal-element": "0.0.560"
   },
   "devDependencies": {
     "@playwright/test": "1.33.0",
-    "may-it-serve": "0.0.5",
-    "@skypack/package-check": "0.2.2"
+    "may-it-serve": "0.0.5"
   },
   "repository": {
     "type": "git",

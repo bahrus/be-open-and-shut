@@ -1,6 +1,7 @@
-import {MinimalProxy, EventConfigs} from 'be-decorated/types';
+import { ActionOnEventConfigs } from "trans-render/froop/types";
+import {IBE} from 'be-enhanced/types';
 
-export interface EndUserProps {
+export interface EndUserProps extends IBE{
     set?: string,
     onClosest?: string,
     toVal?: any,
@@ -10,33 +11,29 @@ export interface EndUserProps {
     onEventType?: string,
 }
 
-export interface VirtualProps extends EndUserProps, MinimalProxy{
+export interface AllProps extends EndUserProps{
     valsDoNotMatch: boolean;
     valsMatch: boolean;
-    //propChangeCnt: number;
     closestRef: WeakRef<Element> | undefined;
 }
 
-export type Proxy = Element & VirtualProps;
+export type AP = AllProps;
 
-export interface ProxyProps extends VirtualProps{
-    proxy: Proxy;
-}
+export type PAP = Partial<AP>;
 
-export type PP = ProxyProps;
+export type ProPAP = Promise<PAP>;
 
-export type PPP = Partial<PP>;
+export type POA = [PAP | undefined, ActionOnEventConfigs<PAP, Actions>]
 
-export type PPE = [PPP, EventConfigs<Proxy, Actions>];
 
 export interface Actions{
-    subscribeToProp(pp: PP): Promise<void | PPE | PPP>;
-    closeDialogIf(pp: PP, e: Event): void;
-    findClosest(pp: PP): Partial<PP>;
-    compareVals(pp: PP): PPP;
-    addOutsideListener(pp: PP): void;
-    removeOutsideListener(pp: PP): void;
-    addLocalListener(pp: PP): PPE;
-    finale(proxy: Proxy, target:Element): Promise<void>; 
+    subscribeToProp(self: this): Promise<void | POA | PAP>;
+    closeDialogIf(self: this, e: Event): void;
+    findClosest(self: this): PAP;
+    compareVals(self: this): PAP;
+    addOutsideListener(self: this): void;
+    removeOutsideListener(self: this): void;
+    addLocalListener(self: this): POA;
+    //finale(proxy: Proxy, target:Element): Promise<void>; 
 }
 
